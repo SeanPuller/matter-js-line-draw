@@ -11,20 +11,29 @@ var Engine = Matter.Engine,
 	Constraint = Matter.Constraint,
 	Vector = Matter.Vector;
 
-// create an engine
-var engine = Engine.create();
-world = engine.world;
-engine.enableSleeping = true;
-
+//Colors
 var colorBackground = '#14151f';
 var colorColliders = '#eeda94';
 var colorBalls = '#003cff';
 var colorConstraints = '#ffffff';
 var colorInteractable = '#F5D259';
 
+var previousMouse = {x:0,y:0};
+var currentMouse = {x:0,y:0};
+var mousedownIsDown = false;
+var isFirstLoop = false;
+
+
+// create an engine
+var engine = Engine.create();
+world = engine.world;
+engine.enableSleeping = true;
 
 var width = window.innerWidth - 20;
 var height = window.innerHeight - 20;
+
+var pullstringLocation = { x: width - 20, y: 20 };
+
 
 // create a renderer
 var render = Render.create({
@@ -39,8 +48,8 @@ var render = Render.create({
 	  }
 });
 
+//Mouse
 var mouse = Mouse.create(render.canvas);
-
 var mouse = Mouse.create(render.canvas),
 mouseConstraint = MouseConstraint.create(engine, {
 	mouse: mouse,
@@ -54,24 +63,22 @@ mouseConstraint = MouseConstraint.create(engine, {
 
 Composite.add(world, mouseConstraint);
 
-var previousMouse = {x:0,y:0};
-var currentMouse = {x:0,y:0};
-var mousedownIsDown = false;
-var isFirstLoop = false;
-
+//OnMouseDown
 Events.on(mouseConstraint, "mousedown", function () {
 	mousedownIsDown = true;
 	isFirstLoop = true;
 });
 
+//OnMouseUp
 Events.on(mouseConstraint, "mouseup", function () {
 	mousedownIsDown = false;
 });
 
 var intval = 0;
 
+// Update
 Events.on(engine, 'afterUpdate', function () {
-	if (Vector.magnitude(Vector.sub(body.position, { x: width - 100, y: 50 })) > 150) {
+	if (Vector.magnitude(Vector.sub(body.position, { x: width - 100, y: 50 })) > 100) {
 		if(intval <= 300){
 			var circleB = Bodies.circle(width/2 + Common.random(10, 20), 100 + Common.random(10, 20), 10 /*, { render: { fillStyle: colorBalls} }*/);
 			Composite.add(world, [circleB]);
@@ -80,6 +87,7 @@ Events.on(engine, 'afterUpdate', function () {
 	}
 });
 
+//OnMove
 Events.on(mouseConstraint, "mousemove", function () {
 	if (mousedownIsDown) {
 		if(mouseConstraint.body != null){
@@ -109,23 +117,22 @@ Events.on(mouseConstraint, "mousemove", function () {
 	}
 });
 
+//Colliders
 var wall1 = Bodies.rectangle(-40, height/2, 80, height, { render: { fillStyle: colorColliders }, isStatic: true });
 var wall2 = Bodies.rectangle(width + 40, height/2, 80, height,{ render: { fillStyle: colorColliders }, isStatic: true });
 var ground = Bodies.rectangle(width/2, height, width, 60,{ render: { fillStyle: colorColliders }, isStatic: true });
-
 Composite.add(world, [ground, wall1, wall2]);
 
-// add soft global constraint
-var body = Bodies.polygon(width - 100, 50, 3, 30, { render: { fillStyle: colorInteractable} });
+//Add Pullstring
+var body = Bodies.polygon(pullstringLocation.x, pullstringLocation.y, 3, 30, { render: { fillStyle: colorInteractable} });
 
 var constraint = Constraint.create({
-	pointA: { x: width - 100, y: 50 },
+	pointA: pullstringLocation,
 	bodyB: body,
 	pointB: {x: 0, y: 0 },
 	stiffness: 0.001,
 	render: {strokeStyle: colorConstraints}
 });
-
 Composite.add(world, [body, constraint]);
 
 Render.run(render);
