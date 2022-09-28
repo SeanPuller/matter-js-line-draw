@@ -107,8 +107,7 @@ Events.on(mouseConstraint, "mousemove", function () {
 
 		var pos = Vector.add(Vector.mult(Vector.sub(currentMouse,previousMouse), 0.5), previousMouse);
 
-		var line = Bodies.rectangle(pos.x, pos.y, mousedistance, 5, { render: { fillStyle: colorColliders} });	
-		Matter.Body.setStatic(line, true);
+		var line = Bodies.rectangle(pos.x, pos.y, mousedistance, 5, { render: { fillStyle: colorColliders} , friction: 0.01, isStatic: true, collisionFilter: { group: -1 }});	
 		Matter.Body.rotate(line, Vector.angle(currentMouse, previousMouse));
 
 		Composite.add(world, [line]);		
