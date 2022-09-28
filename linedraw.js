@@ -101,7 +101,7 @@ Events.on(mouseConstraint, "mousemove", function () {
 		currentMouse = {x:mouse.position.x,y:mouse.position.y};
 
 		var mousedistance = Vector.magnitude(Vector.sub(currentMouse, previousMouse));
-		if (mousedistance< 20) {
+		if (mousedistance< 15) {
 			return;
 		}
 
