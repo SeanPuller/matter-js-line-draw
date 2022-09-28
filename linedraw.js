@@ -16,14 +16,26 @@ var engine = Engine.create();
 world = engine.world;
 engine.enableSleeping = true;
 
+var colorBackground = '#14151f';
+var colorColliders = '#eeda94';
+var colorBalls = '#003cff';
+var colorConstraints = '#ffffff';
+var colorInteractable = '#F5D259';
+
+
+var width = window.innerWidth - 20;
+var height = window.innerHeight - 20;
+
 // create a renderer
 var render = Render.create({
     element: document.body,
     engine: engine,
 	options: {
-		width: window.innerWidth,
-		height: window.innerHeight,
-		wireframes: false
+		width: width,
+		height: height,
+		wireframes: false,
+		background: colorBackground,
+		showSleeping: false
 	  }
 });
 
@@ -59,9 +71,9 @@ Events.on(mouseConstraint, "mouseup", function () {
 var intval = 0;
 
 Events.on(engine, 'afterUpdate', function () {
-	if (Vector.magnitude(Vector.sub(body.position, { x: 280, y: 120 })) > 150) {
+	if (Vector.magnitude(Vector.sub(body.position, { x: width - 100, y: 50 })) > 150) {
 		if(intval <= 300){
-			var circleB = Bodies.circle(window.innerWidth/2 + Common.random(10, 20), 100 + Common.random(10, 20), 20);
+			var circleB = Bodies.circle(width/2 + Common.random(10, 20), 100 + Common.random(10, 20), 10 /*, { render: { fillStyle: colorBalls} }*/);
 			Composite.add(world, [circleB]);
 			intval++;
 		}
@@ -87,7 +99,7 @@ Events.on(mouseConstraint, "mousemove", function () {
 
 		var pos = Vector.add(Vector.mult(Vector.sub(currentMouse,previousMouse), 0.5), previousMouse);
 
-		var line = Bodies.rectangle(pos.x, pos.y, mousedistance, 5, { render: { fillStyle: '#FDFF5C'} });	
+		var line = Bodies.rectangle(pos.x, pos.y, mousedistance, 5, { render: { fillStyle: colorColliders} });	
 		Matter.Body.setStatic(line, true);
 		Matter.Body.rotate(line, Vector.angle(currentMouse, previousMouse));
 
@@ -97,18 +109,21 @@ Events.on(mouseConstraint, "mousemove", function () {
 	}
 });
 
-var ground = Bodies.rectangle(render.canvas.width/2, render.canvas.height - (render.canvas.height/5), render.canvas.width, 60,{ render: { fillStyle: '#000000' }, isStatic: true }, );
+var wall1 = Bodies.rectangle(-40, height/2, 80, height, { render: { fillStyle: colorColliders }, isStatic: true });
+var wall2 = Bodies.rectangle(width + 40, height/2, 80, height,{ render: { fillStyle: colorColliders }, isStatic: true });
+var ground = Bodies.rectangle(width/2, height, width, 60,{ render: { fillStyle: colorColliders }, isStatic: true });
 
-Composite.add(world, [ground]);
+Composite.add(world, [ground, wall1, wall2]);
 
 // add soft global constraint
-var body = Bodies.polygon(280, 100, 3, 30);
+var body = Bodies.polygon(width - 100, 50, 3, 30, { render: { fillStyle: colorInteractable} });
 
 var constraint = Constraint.create({
-	pointA: { x: 280, y: 120 },
+	pointA: { x: width - 100, y: 50 },
 	bodyB: body,
-	pointB: { x: -10, y: -7 },
-	stiffness: 0.001
+	pointB: {x: 0, y: 0 },
+	stiffness: 0.001,
+	render: {strokeStyle: colorConstraints}
 });
 
 Composite.add(world, [body, constraint]);
