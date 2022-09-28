@@ -80,7 +80,7 @@ var intval = 0;
 Events.on(engine, 'afterUpdate', function () {
 	if (Vector.magnitude(Vector.sub(body.position, { x: width - 100, y: 50 })) > 100) {
 		if(intval <= 300){
-			var circleB = Bodies.circle(width/2 + Common.random(10, 20), 100 + Common.random(10, 20), 10 /*, { render: { fillStyle: colorBalls} }*/);
+			var circleB = Bodies.circle(width/2 + Common.random(10, 20), 100 + Common.random(10, 20), 10, {friction: 0.01} /*, { render: { fillStyle: colorBalls} }*/);
 			Composite.add(world, [circleB]);
 			intval++;
 		}
@@ -118,7 +118,7 @@ Events.on(mouseConstraint, "mousemove", function () {
 });
 
 //Colliders
-var wall1 = Bodies.rectangle(-40, height/2, 80, height, { render: { fillStyle: colorColliders }, isStatic: true });
+var wall1 = Bodies.rectangle(-40, height/2, 80, height, { render: { fillStyle: colorColliders }, isStatic: true});
 var wall2 = Bodies.rectangle(width + 40, height/2, 80, height,{ render: { fillStyle: colorColliders }, isStatic: true });
 var ground = Bodies.rectangle(width/2, height, width, 60,{ render: { fillStyle: colorColliders }, isStatic: true });
 Composite.add(world, [ground, wall1, wall2]);
